@@ -17,6 +17,7 @@ function VerifyContent() {
   const userId = searchParams.get('userId')
   const apiKey = searchParams.get('key')
   const mode = searchParams.get('mode') // 'modal' or undefined
+  const paramApiUrl = searchParams.get('apiUrl')
 
   const [step, setStep] = useState<Step>(1)
   const [docType, setDocType] = useState<DocType | null>(null)
@@ -31,13 +32,21 @@ function VerifyContent() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isLocal = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' || 
+                      searchParams.get('isLocal') === 'true' || 
+                      searchParams.get('dev') === 'true';
       setIsLocalhost(isLocal);
-      if (!isLocal) {
-        setApiUrl('https://vouchsdk.onrender.com/v1');
+      
+      if (paramApiUrl) {
+        setApiUrl(paramApiUrl);
+      } else if (isLocal) {
+        setApiUrl('http://localhost:5000');
+      } else {
+        setApiUrl('https://vouchsdk.onrender.com');
       }
     }
-  }, []);
+  }, [searchParams, paramApiUrl]);
 
   const vouch = new Vouch(apiKey || process.env.NEXT_PUBLIC_VOUCH_API_KEY || '', {
     apiUrl

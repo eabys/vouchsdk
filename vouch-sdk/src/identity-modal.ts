@@ -7,6 +7,7 @@ export interface OpenModalParams {
   verifyUrl: string;
   apiKey: string;
   externalUserId: string;
+  apiUrl?: string;
   onResult: (result: any) => void;
   onError: (err: Error) => void;
   onCancel: () => void;
@@ -50,6 +51,15 @@ export function openIdentityModal(params: OpenModalParams) {
   url.searchParams.set('userId', params.externalUserId);
   url.searchParams.set('key', params.apiKey);
   url.searchParams.set('mode', 'modal');
+
+  if (params.apiUrl) {
+    url.searchParams.set('apiUrl', params.apiUrl);
+  }
+
+  if (typeof window !== 'undefined') {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    url.searchParams.set('isLocal', isLocal ? 'true' : 'false');
+  }
 
   iframe.src = url.toString();
   iframe.allow = "camera; microphone; display-capture";

@@ -100,11 +100,13 @@ export class Vouch {
   private readonly http: AxiosInstance;
   private readonly apiKey: string;
   private readonly verifyUrl: string;
+  private readonly apiUrl: string;
 
   constructor(apiKey: string, options: VouchOptions = {}) {
     this.apiKey = apiKey;
     const baseURL = options.apiUrl || (typeof process !== 'undefined' && process.env?.VOUCH_API_URL) || 'https://vouchsdk.onrender.com';
     this.verifyUrl = options.verifyUrl || 'https://vouchsdk-modal.vercel.app';
+    this.apiUrl = baseURL;
 
     this.http = axios.create({
       baseURL,
@@ -124,6 +126,7 @@ export class Vouch {
           verifyUrl: this.verifyUrl,
           apiKey: this.apiKey,
           externalUserId,
+          apiUrl: this.apiUrl,
           onResult: resolve,
           onError: reject,
           onCancel: () => reject({ cancelled: true }),
